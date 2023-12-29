@@ -1,7 +1,7 @@
 import { Application, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { getQuery } from "https://deno.land/x/oak@v12.6.1/helpers.ts";
 
-import { conn } from '../services/db'
+import { conn } from '../services/db.ts'
 
 const router = new Router();
 router
