@@ -1,4 +1,4 @@
-import { Application, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
+import { Application, Router, isHttpError } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { getQuery } from "https://deno.land/x/oak@v12.6.1/helpers.ts";
 import { hash } from '../services/hash.ts'
 import { conn } from '../services/db.ts'
@@ -10,7 +10,7 @@ router
     const { q } = getQuery(context);
     if (!q) throw new Error(`empty query provided. Use with ?q=YOUR_QUERY`)
     const kv = await Deno.openKv();
-    const hashKey = hash(q);
+    const hashKey = await hash(q);
 
     const cachedValue = await kv.get(hashKey);
     if (cachedValue) {
@@ -26,6 +26,22 @@ router
   });
 
 const app = new Application();
+
+app.use(async (context, next) => {
+  try {
+    await next();
+  } catch (err) {
+    if (isHttpError(err)) {
+      context.response.status = err.status;
+    } else {
+      context.response.status = 500;
+    }
+    context.response.body = { error: err.message };
+    context.response.type = "json";
+  }
+});
+
+
 app.use(router.routes());
 app.use(router.allowedMethods());
 await app.listen({ port: 8000 });
