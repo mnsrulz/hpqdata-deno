@@ -3,7 +3,7 @@ import { getQuery } from "https://deno.land/x/oak@v12.6.1/helpers.ts";
 import { hash } from '../services/hash.ts'
 import { conn } from '../services/db.ts'
 
-BigInt.prototype.toJSON = function() { return Number(this); }    //to keep them as numbers. Numbers have good range.
+BigInt.prototype.toJSON = function () { return Number(this); }    //to keep them as numbers. Numbers have good range.
 
 const instanceId = crypto.randomUUID();
 const router = new Router();
@@ -15,9 +15,9 @@ router
     const hashKey = await hash(q);
     const key = ["queryresult", hashKey];
 
-    const cachedValue = await kv.get(key);
-    if (cachedValue) {
-      context.response.body = cachedValue;
+    const { value } = await kv.get(key);
+    if (value) {
+      context.response.body = value;
       context.response.headers.set("x-read-from", 'cache');
     } else {
       const arrowResult = conn.query(q);
