@@ -1,16 +1,28 @@
 import { Application, Router } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { getQuery } from "https://deno.land/x/oak@v12.6.1/helpers.ts";
-
+import { hash } from '../services/hash.ts'
 import { conn } from '../services/db.ts'
 
+const instanceId = crypto.randomUUID();
 const router = new Router();
 router
-  .get("/raw", (context) => {
-    const {q} = getQuery(context);
-    if(!q) throw new Error(`empty query provided. Use with ?q=YOUR_QUERY`)
-    
-    const arrowResult = conn.query(q);
-    context.response.body = arrowResult.toArray().map((row) => row.toJSON());
+  .get("/raw", async (context) => {
+    const { q } = getQuery(context);
+    if (!q) throw new Error(`empty query provided. Use with ?q=YOUR_QUERY`)
+    const kv = await Deno.openKv();
+    const hashKey = hash(q);
+
+    const cachedValue = await kv.get(hashKey);
+    if (cachedValue) {
+      context.response.body = cachedValue;
+      context.response.headers.set("x-read-from", 'cache');
+    } else {
+      const arrowResult = conn.query(q);
+      const result = arrowResult.toArray().map((row) => row.toJSON());
+      await kv.set(hashKey, result, { expireIn: 60 * 1000 }); //60 seconds expiration
+      context.response.body = result;
+    }
+    context.response.headers.set("x-instance-id", instanceId);
   });
 
 const app = new Application();
