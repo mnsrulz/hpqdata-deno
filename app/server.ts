@@ -32,6 +32,7 @@ const app = new Application();
 
 app.use(async (context, next) => {
   try {
+    context.response.headers.set('Access-Control-Allow-Origin', '*')
     await next();
   } catch (err) {
     if (isHttpError(err)) {
