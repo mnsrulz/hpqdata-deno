@@ -22,7 +22,7 @@ router
     } else {
       const arrowResult = conn.query(q);
       const result = arrowResult.toArray().map((row) => row.toJSON());
-      await kv.set(key, result, { expireIn: 60 * 1000 }); //60 seconds expiration
+      await kv.set(key, JSON.stringify(result), { expireIn: 60 * 1000 }); //60 seconds expiration
       context.response.body = result;
     }
     context.response.headers.set("x-instance-id", instanceId);
