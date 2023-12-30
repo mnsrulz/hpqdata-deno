@@ -1,7 +1,7 @@
 import { Application, Router, isHttpError } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { getQuery } from "https://deno.land/x/oak@v12.6.1/helpers.ts";
 import { hash } from '../services/hash.ts'
-import { conn } from '../services/db.ts'
+import { getConnection } from '../services/db.ts'
 const ttlTimeMs = 5 * 60 * 1000;  //5 minutes of cache
 BigInt.prototype.toJSON = function () { return Number(this); }    //to keep them as numbers. Numbers have good range.
 
@@ -20,8 +20,9 @@ router
       context.response.body = value;
       context.response.headers.set("x-read-from", 'cache');
     } else {
-      const arrowResult = conn.query(q);
-      const result = JSON.stringify(arrowResult.toArray().map((row) => row.toJSON()));
+      const conn = getConnection();
+      const arrowResult = await conn.send(q).finally(() => conn.close());
+      const result = JSON.stringify(arrowResult.readAll()[0].toArray().map((row) => row.toJSON()));
       await kv.set(key, result, { expireIn: ttlTimeMs });
       context.response.body = result;
     }

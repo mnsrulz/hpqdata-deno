@@ -12,6 +12,7 @@ db.registerFileBuffer('db.parquet', new Uint8Array(arrayBuffer));
 //HTTP paths are not supported due to xhr not available in deno.
 //db.registerFileURL('db.parquet', 'https://github.com/mnsrulz/hpqdata/releases/download/v1.1/db.parquet', DuckDBDataProtocol.HTTP, false);
 
-export const conn = db.connect();
+
+export const getConnection = ()=> db.connect();
 
 
