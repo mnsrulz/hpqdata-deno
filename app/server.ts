@@ -32,7 +32,7 @@ router
     context.response.body = 'success';
   })
   .get("/count", async (context) => {
-    const q = `SELECT COUNT(1) C FROM 'db.parquet'`
+    const q = `SELECT COUNT(1) C FROM read_parquet('./assets/db.parquet')`
     
     // const dbFileHandle = await Deno.open("./assets/db.parquet");
     // await db.registerFileHandle('db.parquet', dbFileHandle, 3, true);
