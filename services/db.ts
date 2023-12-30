@@ -6,9 +6,13 @@ const JSDELIVR_BUNDLES = getJsDelivrBundles();
 const initialize = async ()=>{
     const db = await createDuckDB(JSDELIVR_BUNDLES, logger, DEFAULT_RUNTIME);
     await db.instantiate(() => { });
-    const arrayBuffer = await fetch('https://github.com/mnsrulz/hpqdata/releases/download/v1.1/db.parquet')    //let's initialize the data set in memory
-        .then(r => r.arrayBuffer());
-    db.registerFileBuffer('db.parquet', new Uint8Array(arrayBuffer));
+    //const arrayBuffer = await fetch('https://github.com/mnsrulz/hpqdata/releases/download/v1.1/db.parquet')    //let's initialize the data set in memory
+    //    .then(r => r.arrayBuffer());
+    //db.registerFileBuffer('db.parquet', new Uint8Array(arrayBuffer));
+
+    // db.registerFileHandle('db.parquet', '')
+    // await db.registerFileHandle('local.parquet', pickedFile, DuckDBDataProtocol.BROWSER_FILEREADER, true);
+
     return db;
 }
 
