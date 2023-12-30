@@ -9,6 +9,7 @@ const initialize = async ()=>{
     const arrayBuffer = await fetch('https://github.com/mnsrulz/hpqdata/releases/download/v1.1/db.parquet')    //let's initialize the data set in memory
         .then(r => r.arrayBuffer());
     db.registerFileBuffer('db.parquet', new Uint8Array(arrayBuffer));
+    return db;
 }
 
 const dbPromise = initialize();
