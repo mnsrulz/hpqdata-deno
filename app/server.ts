@@ -9,7 +9,7 @@ const instanceId = crypto.randomUUID();
 const router = new Router();
 router
 .get("/ls", async (context) => {
-  for await (const dirEntry of Deno.readDir("../assets")) {
+  for await (const dirEntry of Deno.readDir(".")) {
     console.log(dirEntry.name);
   }
 })
