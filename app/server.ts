@@ -15,6 +15,15 @@ router
     }
     context.response.body = d;
   })
+  .get("/testopenfile", async (context) => {
+    await Deno.open("./assets/db.parquet");
+    // const d = [];
+    // for await (const dirEntry of Deno.readDir("./assets/")) {
+    //   d.push(dirEntry.name);
+    // }
+    // context.response.body = d;
+  })
+
   .get("/count", async (context) => {
     const q = `SELECT COUNT(1) C FROM 'db.parquet'`
     const conn = await getConnection();
