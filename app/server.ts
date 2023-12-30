@@ -40,7 +40,6 @@ router
     const conn = await db.connect();
     const arrowResult = await conn.send(q);
     const result = JSON.stringify(arrowResult.readAll()[0].toArray().map((row) => row.toJSON()));
-    await kv.set(key, result, { expireIn: ttlTimeMs });
     context.response.body = result;
     conn.close();
   })
