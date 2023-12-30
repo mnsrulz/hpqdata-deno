@@ -30,7 +30,7 @@ router
     const q = `SELECT COUNT(1) C FROM 'db.parquet'`
     
     const dbFileHandle = await Deno.open("./assets/db.parquet");
-    await db.registerFileHandle('db.parquet', dbFileHandle, 1, true);
+    await db.registerFileHandle('db.parquet', dbFileHandle, 3, true);
 
     const conn = await db.connect();
     const arrowResult = await conn.send(q);
