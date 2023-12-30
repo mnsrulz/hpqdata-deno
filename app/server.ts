@@ -8,6 +8,13 @@ BigInt.prototype.toJSON = function () { return Number(this); }    //to keep them
 const instanceId = crypto.randomUUID();
 const router = new Router();
 router
+  .get("/ls", async (context) => {
+    const d = [];
+    for await (const dirEntry of Deno.readDir("./assets/")) {
+      d.push(dirEntry.name);
+    }
+    context.response.body = d;
+  })
   .get("/raw", async (context) => {
     const { q } = getQuery(context);
     if (!q) throw new Error(`empty query provided. Use with ?q=YOUR_QUERY`)
