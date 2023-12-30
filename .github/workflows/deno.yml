@@ -31,4 +31,4 @@ jobs:
         uses: denoland/deployctl@v1
         with:
           project: whole-stoat-49 # the name of the project on Deno Deploy
-          entrypoint: app/main.ts # the entrypoint to deploy
+          entrypoint: app/server.ts # the entrypoint to deploy
