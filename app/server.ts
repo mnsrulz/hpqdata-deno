@@ -21,10 +21,11 @@ router
       context.response.headers.set("x-read-from", 'cache');
     } else {
       const conn = getConnection();
-      const arrowResult = await conn.send(q).finally(() => conn.close());
+      const arrowResult = await conn.send(q);
       const result = JSON.stringify(arrowResult.readAll()[0].toArray().map((row) => row.toJSON()));
       await kv.set(key, result, { expireIn: ttlTimeMs });
       context.response.body = result;
+      conn.close();
     }
     context.response.headers.set("x-instance-id", instanceId);
     context.response.type = "application/json";
