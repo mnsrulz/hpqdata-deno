@@ -9,7 +9,6 @@ const JSDELIVR_BUNDLES = getJsDelivrBundles();
 const db = await createDuckDB(JSDELIVR_BUNDLES, logger, DEFAULT_RUNTIME);
 await db.instantiate(() => { });
 
-//const FILE_URL = new URL("./assets/db.parquet", import.meta.url).href;
 const FILE_URL = 'https://github.com/mnsrulz/hpqdata/releases/download/v1.1/db.parquet';
 const arrayBuffer = await fetch(FILE_URL)    //let's initialize the data set in memory
         .then(r => r.arrayBuffer());
@@ -30,6 +29,7 @@ router
   })
   .get("/testopenfile", async (context) => {
     await Deno.open("./assets/db.parquet");
+    context.response.body = 'success';
   })
   .get("/count", async (context) => {
     const q = `SELECT COUNT(1) C FROM 'db.parquet'`
