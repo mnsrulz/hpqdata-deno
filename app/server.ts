@@ -1,7 +1,17 @@
 import { Application, Router, isHttpError } from "https://deno.land/x/oak@v12.6.1/mod.ts";
 import { getQuery } from "https://deno.land/x/oak@v12.6.1/helpers.ts";
 import { hash } from '../services/hash.ts'
-import { getConnection } from '../services/db.ts'
+
+// @deno-types="https://esm.sh/@duckdb/duckdb-wasm@1.28.0/dist/duckdb-browser-blocking.d.ts"
+import { createDuckDB, getJsDelivrBundles, ConsoleLogger, DEFAULT_RUNTIME } from 'https://cdn.jsdelivr.net/npm/@duckdb/duckdb-wasm@1.28.0/dist/duckdb-browser-blocking.mjs/+esm';
+const logger = new ConsoleLogger();
+const JSDELIVR_BUNDLES = getJsDelivrBundles();
+const db = await createDuckDB(JSDELIVR_BUNDLES, logger, DEFAULT_RUNTIME);
+await db.instantiate(() => { });
+const dbFileHandle = await Deno.open("./assets/db.parquet");
+await db.registerFileHandle('db.parquet', dbFileHandle, 1, true);
+
+
 const ttlTimeMs = 5 * 60 * 1000;  //5 minutes of cache
 BigInt.prototype.toJSON = function () { return Number(this); }    //to keep them as numbers. Numbers have good range.
 
@@ -17,44 +27,39 @@ router
   })
   .get("/testopenfile", async (context) => {
     await Deno.open("./assets/db.parquet");
-    // const d = [];
-    // for await (const dirEntry of Deno.readDir("./assets/")) {
-    //   d.push(dirEntry.name);
-    // }
-    // context.response.body = d;
   })
-
   .get("/count", async (context) => {
     const q = `SELECT COUNT(1) C FROM 'db.parquet'`
-    const conn = await getConnection();
+    const conn = await db.connect();
     const arrowResult = await conn.send(q);
     const result = JSON.stringify(arrowResult.readAll()[0].toArray().map((row) => row.toJSON()));
     await kv.set(key, result, { expireIn: ttlTimeMs });
     context.response.body = result;
     conn.close();
   })
-  .get("/raw", async (context) => {
-    const { q } = getQuery(context);
-    if (!q) throw new Error(`empty query provided. Use with ?q=YOUR_QUERY`)
-    const kv = await Deno.openKv();
-    const hashKey = await hash(q);
-    const key = ["queryresult", hashKey];
+  // .get("/raw", async (context) => {
+  //   const { q } = getQuery(context);
+  //   if (!q) throw new Error(`empty query provided. Use with ?q=YOUR_QUERY`)
+  //   const kv = await Deno.openKv();
+  //   const hashKey = await hash(q);
+  //   const key = ["queryresult", hashKey];
 
-    const { value } = await kv.get(key);
-    if (value) {
-      context.response.body = value;
-      context.response.headers.set("x-read-from", 'cache');
-    } else {
-      const conn = await getConnection();
-      const arrowResult = await conn.send(q);
-      const result = JSON.stringify(arrowResult.readAll()[0].toArray().map((row) => row.toJSON()));
-      await kv.set(key, result, { expireIn: ttlTimeMs });
-      context.response.body = result;
-      conn.close();
-    }
-    context.response.headers.set("x-instance-id", instanceId);
-    context.response.type = "application/json";
-  });
+  //   const { value } = await kv.get(key);
+  //   if (value) {
+  //     context.response.body = value;
+  //     context.response.headers.set("x-read-from", 'cache');
+  //   } else {
+  //     const conn = await getConnection();
+  //     const arrowResult = await conn.send(q);
+  //     const result = JSON.stringify(arrowResult.readAll()[0].toArray().map((row) => row.toJSON()));
+  //     await kv.set(key, result, { expireIn: ttlTimeMs });
+  //     context.response.body = result;
+  //     conn.close();
+  //   }
+  //   context.response.headers.set("x-instance-id", instanceId);
+  //   context.response.type = "application/json";
+  // })
+  ;
 
 const app = new Application();
 
