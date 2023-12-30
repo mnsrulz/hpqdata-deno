@@ -9,9 +9,12 @@ const instanceId = crypto.randomUUID();
 const router = new Router();
 router
 .get("/ls", async (context) => {
+  const d = [];
+  
   for await (const dirEntry of Deno.readDir("./assets/")) {
-    console.log(dirEntry.name);
+    d.push(dirEntry.name);
   }
+  context.response.body = d;
 })
   .get("/raw", async (context) => {
     const { q } = getQuery(context);
