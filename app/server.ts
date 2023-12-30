@@ -9,10 +9,10 @@ const JSDELIVR_BUNDLES = getJsDelivrBundles();
 const db = await createDuckDB(JSDELIVR_BUNDLES, logger, DEFAULT_RUNTIME);
 await db.instantiate(() => { });
 
-const FILE_URL = 'https://github.com/mnsrulz/hpqdata/releases/download/v1.1/db.parquet';
-const arrayBuffer = await fetch(FILE_URL)    //let's initialize the data set in memory
-        .then(r => r.arrayBuffer());
-db.registerFileBuffer('db.parquet', new Uint8Array(arrayBuffer));
+// const FILE_URL = 'https://github.com/mnsrulz/hpqdata/releases/download/v1.1/db.parquet';
+// const arrayBuffer = await fetch(FILE_URL)    //let's initialize the data set in memory
+//         .then(r => r.arrayBuffer());
+// db.registerFileBuffer('db.parquet', new Uint8Array(arrayBuffer));
 
 const ttlTimeMs = 5 * 60 * 1000;  //5 minutes of cache
 BigInt.prototype.toJSON = function () { return Number(this); }    //to keep them as numbers. Numbers have good range.
