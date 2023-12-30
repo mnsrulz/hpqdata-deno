@@ -11,8 +11,8 @@ const initialize = async ()=>{
     //db.registerFileBuffer('db.parquet', new Uint8Array(arrayBuffer));
 
     // db.registerFileHandle('db.parquet', '')
-    // await db.registerFileHandle('local.parquet', pickedFile, DuckDBDataProtocol.BROWSER_FILEREADER, true);
-
+    const dbFileHandle = await Deno.open("./assets/db.parquet");
+    await db.registerFileHandle('db.parquet', dbFileHandle, 1, true);
     return db;
 }
 

@@ -16,7 +16,7 @@ router
     context.response.body = d;
   })
   .get("/count", async (context) => {
-    const q = `SELECT COUNT(1) C FROM './assets/db.parquet'`
+    const q = `SELECT COUNT(1) C FROM 'db.parquet'`
     const conn = await getConnection();
     const arrowResult = await conn.send(q);
     const result = JSON.stringify(arrowResult.readAll()[0].toArray().map((row) => row.toJSON()));
