@@ -8,8 +8,6 @@ const logger = new ConsoleLogger();
 const JSDELIVR_BUNDLES = getJsDelivrBundles();
 const db = await createDuckDB(JSDELIVR_BUNDLES, logger, DEFAULT_RUNTIME);
 await db.instantiate(() => { });
-const dbFileHandle = await Deno.open("./assets/db.parquet");
-await db.registerFileHandle('db.parquet', dbFileHandle, 1, true);
 
 
 const ttlTimeMs = 5 * 60 * 1000;  //5 minutes of cache
@@ -30,6 +28,10 @@ router
   })
   .get("/count", async (context) => {
     const q = `SELECT COUNT(1) C FROM 'db.parquet'`
+    
+    const dbFileHandle = await Deno.open("./assets/db.parquet");
+    await db.registerFileHandle('db.parquet', dbFileHandle, 1, true);
+
     const conn = await db.connect();
     const arrowResult = await conn.send(q);
     const result = JSON.stringify(arrowResult.readAll()[0].toArray().map((row) => row.toJSON()));
