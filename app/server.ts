@@ -3,7 +3,7 @@ import { getConnection } from '../services/db.ts'
 const ttlTimeMs = 5 * 24 * 60 * 60 * 1000;  //5 days of cache
 BigInt.prototype.toJSON = function () { return Number(this); }    //to keep them as numbers. Numbers have good range.
 
-const kv = await Deno.openKv("https://api.deno.com/databases/1661401b-01c3-4af3-a196-e69abe6fb7a1/connect");
+const kv = await Deno.openKv("https://api.deno.com/databases/52207214-0a04-474b-bc77-a447d7766862/connect");
 
 type RawSqlRequest = { q: string, requestId: string };
 
