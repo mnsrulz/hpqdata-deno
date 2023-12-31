@@ -22,7 +22,7 @@ kv.listenQueue(async (message) => {
 
 const router = new Router();
 router
-  .get("/raw", async (context) => {
+  .get("/raw_org", async (context) => {
     const { q } = getQuery(context);
     if (!q) throw new Error(`empty query provided. Use with ?q=YOUR_QUERY`)
     const hashKey = await hash(q);
@@ -43,7 +43,7 @@ router
     context.response.headers.set("x-instance-id", instanceId);
     context.response.type = "application/json";
   })
-  .get("/rawasync", async (context) => {
+  .get("/raw", async (context) => {
     const { q } = getQuery(context);
     if (!q) throw new Error(`empty query provided. Use with ?q=YOUR_QUERY`)
     const requestId = await hash(q);
