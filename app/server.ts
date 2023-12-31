@@ -48,8 +48,8 @@ router
   .get("/rawasync", async (context) => {
     const { q } = getQuery(context);
     if (!q) throw new Error(`empty query provided. Use with ?q=YOUR_QUERY`)
-    const hashKey = await hash(q);
-    const key = ["queryresult", hashKey];
+    const requestId = await hash(q);
+    const key = ["queryresult", requestId];
 
     const { value } = await kv.get(key);
     if (value) {
