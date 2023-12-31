@@ -2,7 +2,7 @@ import { Application, Router, isHttpError } from "https://deno.land/x/oak@v12.6.
 import { getQuery } from "https://deno.land/x/oak@v12.6.1/helpers.ts";
 import { hash } from '../services/hash.ts'
 import { getConnection } from '../services/db.ts'
-const ttlTimeMs = 5 * 60 * 1000;  //5 minutes of cache
+const ttlTimeMs = 5 * 24 * 60 * 60 * 1000;  //5 days of cache
 BigInt.prototype.toJSON = function () { return Number(this); }    //to keep them as numbers. Numbers have good range.
 
 const instanceId = crypto.randomUUID();
