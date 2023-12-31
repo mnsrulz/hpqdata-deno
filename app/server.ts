@@ -10,11 +10,14 @@ type RawSqlRequest = { q: string, requestId: string };
 await kv.listenQueue(async (message) => {
   if (!message) return;
   const { requestId, q } = JSON.parse(`${message}`) as RawSqlRequest;
+  const key = ["queryresult", requestId];
   console.log(`new message received! ${instanceId}, ${payload}`);
   const conn = await getConnection();
   const arrowResult = await conn.send(q);
   const result = JSON.stringify(arrowResult.readAll()[0].toArray().map((row) => row.toJSON()));
-  await kv.set(requestId, result, { expireIn: ttlTimeMs });
+  await kv.set(key, {
+    result
+  }, { expireIn: ttlTimeMs });
 });
 
 
