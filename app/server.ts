@@ -15,7 +15,7 @@ kv.listenQueue(async (message) => {
   console.log(`new message received! ${requestId}. Processing in instanceId: ${instanceId}`);
   const conn = await getConnection();
   const arrowResult = await conn.send(q);
-  const result = JSON.stringify(arrowResult.readAll()[0].toArray().map((row) => row.toJSON()));
+  const result = JSON.stringify(arrowResult.readAll().flatMap(k => k.toArray().map((row) => row.toJSON())));
   await kv.set(key, result, { expireIn: ttlTimeMs });
 });
 
